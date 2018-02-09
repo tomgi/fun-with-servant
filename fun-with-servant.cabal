@@ -15,15 +15,21 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Server, Client, Types
+  exposed-modules:     Lib, Docs, Server, Client, Types
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , servant-server
+                     , servant-pandoc
+                     , pandoc
+                     , servant-docs
+                     , servant
                      , HTTP
                      , wai
                      , warp
-                     , transformers
                      , bytestring
+                     , text
+                     , http-types
+                     , data-default
   default-language:    Haskell2010
 
 executable fun-with-servant-exe
