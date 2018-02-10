@@ -1,4 +1,4 @@
-module Client (currentDateTime, currentIP) where
+module RestClient (currentDateTime, currentIP) where
 
 import           Control.Monad
 import           Data.Aeson

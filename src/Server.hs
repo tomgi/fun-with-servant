@@ -3,31 +3,47 @@
 
 module Server (API, api, server) where
 
-import qualified Client
+import           Config
 import           Control.Monad.IO.Class
 import           Data.ByteString.Lazy.Char8 (pack)
+import           Data.Int
+import           Database.Persist.Sql
+import qualified Db
+import           GHC.Int
+import qualified RestClient
+import           Schema
 import           Servant
 import           Types
 
 type API = "users" :> Get '[JSON] [User]
+      :<|> "users" :> "create"
+                   :> ReqBody '[JSON] User
+                   :> Post '[JSON] Int64
       :<|> "time"  :> Get '[JSON] DateTimeAndIP
 
 api :: Proxy API
 api = Proxy
 
-server :: Server API
-server = return users
+server :: Config -> Server API
+server config = users (pool config)
+    :<|> createUser (pool config)
     :<|> currentDateTimeHandler
 
-users :: [User]
-users = [ User 1 "Isaac" "Newton"
-        , User 2 "Albert" "Einstein"
-        ]
+users :: ConnectionPool -> Handler [User]
+users pool = do
+  u <- liftIO $ Db.allUsers pool
+  return $ map entityVal u
+
+createUser :: ConnectionPool -> User -> Handler Int64
+createUser pool user = do
+  userId <- liftIO $ Db.storeUser user pool
+  return $ fromSqlKey userId
+
 
 currentDateTimeHandler :: Handler DateTimeAndIP
 currentDateTimeHandler = do
-  r1 <- liftIO Client.currentDateTime
-  r2 <- liftIO Client.currentIP
+  r1 <- liftIO RestClient.currentDateTime
+  r2 <- liftIO RestClient.currentIP
   let res = (,) <$> r1 <*> r2
   case res of
     Left err -> throwError myerr

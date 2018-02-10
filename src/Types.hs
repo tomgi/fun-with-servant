@@ -5,14 +5,6 @@ module Types where
 import           Data.Aeson
 import           GHC.Generics
 
-data User = User
-  { userId        :: Int
-  , userFirstName :: String
-  , userLastName  :: String
-  } deriving (Eq, Show, Generic)
-
-instance ToJSON User
-
 data DateTime = DateTime
   { time                     :: String
   , date                     :: String
