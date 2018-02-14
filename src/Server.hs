@@ -5,6 +5,7 @@ module Server (API, api, server) where
 
 import           Config
 import           Control.Monad.IO.Class
+import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (pack)
 import           Data.Int
 import           Database.Persist.Sql
@@ -24,10 +25,12 @@ type API = "users" :> Get '[JSON] [User]
 api :: Proxy API
 api = Proxy
 
-server :: Config -> Server API
-server config = users (pool config)
-    :<|> createUser (pool config)
-    :<|> currentDateTimeHandler
+server :: Reader Config (Server API)
+server = do
+    config <- ask
+    return $ users (pool config)
+      :<|> createUser (pool config)
+      :<|> currentDateTimeHandler
 
 users :: ConnectionPool -> Handler [User]
 users pool = do

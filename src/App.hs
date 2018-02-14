@@ -6,6 +6,7 @@ module App (startApp) where
 
 import           Config
 import           Control.Monad.IO.Class
+import           Control.Monad.Reader
 import           Data.ByteString.Char8    (pack)
 import           Data.Maybe
 import           Db
@@ -21,11 +22,13 @@ type DocsAPI = Server.API :<|> Raw
 api :: Proxy DocsAPI
 api = Proxy
 
-server :: Config -> Server DocsAPI
-server config = Server.server config :<|> Docs.server
+server :: Reader Config (Server DocsAPI)
+server = do
+  s <- Server.server
+  return (s :<|> Docs.server)
 
-app :: Config -> Application
-app = serve api . server
+app :: Reader Config Application
+app = server >>= \s -> return $ serve api s
 
 startApp :: IO ()
 startApp = do
@@ -42,4 +45,4 @@ startApp = do
   let port = fromMaybe 8080 (portEnv >>= readMaybe)
   putStrLn $ "Listening on " ++ show port
 
-  run port $ app $ Config pool
+  run port $ runReader app (Config pool)
