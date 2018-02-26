@@ -1,1 +1,1 @@
-web: fun-with-servant-exe
+web: fun-with-servant

@@ -16,13 +16,14 @@ import           Servant
 import qualified Server
 import           System.Environment
 import           Text.Read
+import Middleware
 
-type DocsAPI = Server.API :<|> Raw
+type APIWithDocs = Server.API :<|> ("docs" :> Raw)
 
-api :: Proxy DocsAPI
+api :: Proxy APIWithDocs
 api = Proxy
 
-server :: Reader Config (Server DocsAPI)
+server :: Reader Config (Server APIWithDocs)
 server = do
   s <- Server.server
   return (s :<|> Docs.server)
@@ -45,4 +46,5 @@ startApp = do
   let port = fromMaybe 8080 (portEnv >>= readMaybe)
   putStrLn $ "Listening on " ++ show port
 
-  run port $ runReader app (Config pool)
+  let middlewares = staticFiles
+  run port $ middlewares $ runReader app (Config pool)

@@ -16,11 +16,13 @@ import           Schema
 import           Servant
 import           Types
 
-type API = "users" :> Get '[JSON] [User]
-      :<|> "users" :> "create"
+type API =
+  "api" :>
+      ("users" :> Get '[JSON] [User]
+  :<|> "users" :> "create"
                    :> ReqBody '[JSON] User
                    :> Post '[JSON] Int64
-      :<|> "time"  :> Get '[JSON] DateTimeAndIP
+  :<|> "time"  :> Get '[JSON] DateTimeAndIP)
 
 api :: Proxy API
 api = Proxy

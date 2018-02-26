@@ -8,7 +8,7 @@ import           GHC.Generics
 data DateTime = DateTime
   { time                     :: String
   , date                     :: String
-  , milliseconds_since_epoch :: Integer
+  , milliseconds_since_epoch :: Int
   } deriving (Eq, Show, Generic)
 
 instance FromJSON DateTime
