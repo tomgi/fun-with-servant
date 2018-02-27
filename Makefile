@@ -13,7 +13,9 @@ live-back:
 	ghcid --test=:main
 
 live-front:
-	elm-live src/frontend/Main.elm
+	xdg-open "http://localhost:8080/live.html"
+	elm-live src/frontend/Main.elm -- --output public/index.js
+
 
 elm-export:
 	stack install --exec export
