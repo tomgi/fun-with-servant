@@ -1,0 +1,15 @@
+{
+  "name": "fun-with-servant",
+  "repository": "https://github.com/tomgi/fun-with-servant",
+  "env": {
+    "ELM_COMPILE": "elm make src/frontend/Main.elm --output public/index.js"
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/srid/heroku-buildpack-elm.git"
+    },
+    {
+      "url": "https://github.com/mfine/heroku-buildpack-stack"
+    }
+  ]
+}
