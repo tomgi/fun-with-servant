@@ -4,6 +4,11 @@ import Html.Events exposing (..)
 import Http
 import Generated exposing (..)
 import Result
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
+import Bootstrap.Button as Button
 
 main : Program Never Model Msg
 main =
@@ -70,16 +75,19 @@ validate { newUserFirstName, newUserLastName } =
 
 view : Model -> Html.Html Msg
 view model =
-  div []
-    [ div
-        [ class "container-fluid" ]
-        [ h1 [] [ text "Users" ]
-        , viewUserForm model
-        , viewUserList model
+  Grid.container []
+        [ CDN.stylesheet -- creates an inline style node with the Bootstrap CSS
+        , Grid.row []
+            [ Grid.col []
+                [
+                  h1 [] [text "Users"]
+                , viewUserForm model
+                , viewUserList model
+                , a [href "/docs"] [ text "API docs" ]
+                ]
+            ]
+
         ]
-    , p []
-        [a [href "/docs"] [ text "API docs" ]]
-    ]
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -87,40 +95,25 @@ subscriptions model =
 
 viewUserForm : Model -> Html.Html Msg
 viewUserForm model =
-  div
-    [ class "row" ]
-    [ div
-        [ class "col-lg-12" ]
+  Grid.row []
+    [ Grid.col []
         [ h2 [] [ text "Create a user" ]
-        , form
-            [ class "form-inline"
-            , onSubmit CreateUser
-            ]
-            [ div
-                [ class "form-group" ]
-                [ input
-                    [ placeholder "First name"
-                    , class "form-control"
-                    , value model.newUserFirstName
-                    , onInput SetNewUserFirstName
+        , Form.formInline [ onSubmit CreateUser ]
+            [ Form.group []
+                [ Input.text
+                    [ Input.placeholder "First name"
+                    , Input.value model.newUserFirstName
+                    , Input.onInput SetNewUserFirstName
                     ]
-                    []
                 ]
-            , div
-                [ class "form-group" ]
-                [ input
-                    [ placeholder "Last name"
-                    , class "form-control"
-                    , value model.newUserLastName
-                    , onInput SetNewUserLastName
+            , Form.group []
+                [ Input.text
+                    [ Input.placeholder "Last name"
+                    , Input.value model.newUserLastName
+                    , Input.onInput SetNewUserLastName
                     ]
-                    []
                 ]
-            , button
-                [ type_ "submit"
-                , class "btn btn-default"
-                ]
-                [ text "Create user" ]
+            , Button.button [ Button.primary ] [ text "Create user" ]
             ]
         ]
     ]
@@ -128,29 +121,21 @@ viewUserForm model =
 
 viewUserList : { a | users : List User } -> Html Msg
 viewUserList model =
-  div
-    []
-    [ h2 [] [ text "All users" ]
-    , div
-        [ class "row" ]
-        (List.map viewUser model.users)
-    , button
-        [ onClick FetchUsers
-        , class "btn btn-default"
+  Grid.row []
+    [ Grid.col []
+        [ h2 [] [ text "All users" ]
+        , Grid.row []
+            (List.map viewUser model.users)
+        , Button.button
+            [ Button.onClick FetchUsers ]
+            [ text "Refresh user list" ]
         ]
-        [ text "Refresh user list" ]
     ]
 
-viewUser : User -> Html.Html Msg
+viewUser : User -> Grid.Column Msg
 viewUser user =
-  div
-    [ class "col-lg-3" ]
-    [ div
-        [ class "panel panel-default" ]
-        [ div
-            [ class "panel-heading" ]
-            [ text (user.firstName ++ " " ++ user.lastName) ]
-        ]
+  Grid.col []
+    [ text (user.firstName ++ " " ++ user.lastName)
     ]
 
 
