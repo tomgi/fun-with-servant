@@ -10,7 +10,7 @@ elm-export:
 	stack install --exec elm-export
 
 elm-compile:
-	elm make src/frontend/Main.elm --output public/index.js
+	elm make src/frontend/Main.elm --output public/index.js --yes
 
 live-back:
 	ghcid --test=:main
